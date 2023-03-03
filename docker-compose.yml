@@ -5,10 +5,13 @@ services:
     image: mongo:6
     restart: always
     container_name: mongo_rs1
+    networks:
+      mongo_network:
+        ipv4_address: 172.20.0.2
     depends_on:
       - mongo_rs2
     volumes:
-      - ./data/mongo-1:/data/db
+      - /mnt/sera_mongo/volumes-mongo/replica-1:/data/db
     expose:
         - 30001
     ports:
@@ -18,10 +21,13 @@ services:
     image: mongo:6
     restart: always
     container_name: mongo_rs2
+    networks:
+      mongo_network:
+        ipv4_address: 172.20.0.3
     depends_on:
       - mongo_rs3
     volumes:
-      - ./data/mongo-2:/data/db
+      - /mnt/sera_mongo/volumes-mongo/replica-2:/data/db
     expose:
         - 30002
     ports:
@@ -31,8 +37,11 @@ services:
     image: mongo:6
     restart: always
     container_name: mongo_rs3
+    networks:
+      mongo_network:
+        ipv4_address: 172.20.0.4
     volumes:
-      - ./data/mongo-3:/data/db
+      - /mnt/sera_mongo/volumes-mongo/replica-3:/data/db
     expose:
         - 30003
     ports:
@@ -41,11 +50,22 @@ services:
   mongo_host:
     build: "./main-replica"
     container_name: mongo_host
+    networks:
+      mongo_network:
+        ipv4_address: 172.20.0.5
     volumes:
-      - ./data/host:/data/db
+      - /mnt/sera_mongo/volumes-mongo/host:/data/db
     depends_on:
       - mongo_rs1
     expose:
-        - 30004
+        - 27017
     ports:
-      - 30004:30004
+      - 27017:30004
+
+networks:
+  mongo_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
