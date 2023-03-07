@@ -4,4 +4,4 @@ echo "Iniciando o host para o Replica Set"
 
 echo "Iniciando o MongoDB"
 
-mongod --replSet rsmongo --bind_ip mongo_host --port 30004
+mongod --replSet rsmongo --bind_ip_all --port 30004
